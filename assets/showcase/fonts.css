@@ -1,0 +1,9 @@
+/* Both faces are under the SIL Open Font License, so the rendered images
+   may be published. The fallbacks only apply while the web fonts load;
+   render.sh gives them time to arrive. */
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400..700&display=block");
+
+:root {
+  --sans: "Inter", sans-serif;
+  --display: "Bricolage Grotesque", var(--sans);
+}

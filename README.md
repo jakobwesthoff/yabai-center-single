@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/hero.webp" width="1280" alt="An ultrawide display with one browser window. Without yabai-center-single the window spans the whole 3360 pt display; with it, the window sits 2080 pt wide in the middle, with padding on both sides.">
+</p>
+
 # yabai-center-single
 
 **Keep a lone tiled window on a wide display from stretching across the

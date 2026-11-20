@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="fonts.css">
+<style>
+  /* An ultrawide at dusk with its one window lit in amber, the active
+     border colour (0xFFF3B23E) of the setup the captures come from. The
+     windows sit where yabai put them on that 3360 x 1418 pt display:
+     centered at x 640 and 2080 pt wide, stretched at x 12 and 3336 pt
+     wide. */
+  :root {
+    --amber: #f3b23e;
+    --amber-soft: #ffcf7a;
+    --ink: #f5f1ff;
+    --screen-w: 900px;
+    --screen-h: calc(var(--screen-w) * 1418 / 3360);
+  }
+  html, body { margin: 0; width: 1280px; height: 640px; overflow: hidden; }
+  body {
+    position: relative;
+    background:
+      radial-gradient(closest-side, rgba(243,178,62,.26), transparent) 50% 100% / 1000px 150px no-repeat,
+      radial-gradient(closest-side, rgba(126,84,230,.32), transparent) 8% 0% / 900px 620px no-repeat,
+      radial-gradient(closest-side, rgba(214,92,160,.18), transparent) 96% 18% / 760px 560px no-repeat,
+      linear-gradient(180deg, #1f1836 0%, #151a33 55%, #0e1222 100%);
+    font-family: var(--sans); color: var(--ink);
+  }
+  .copy { position: absolute; top: 44px; left: 0; right: 0; text-align: center; }
+  .name {
+    font-family: var(--display); font-weight: 800; font-size: 52px; line-height: 1;
+    letter-spacing: -1.2px;
+  }
+  .slogan {
+    margin-top: 14px;
+    font-family: var(--display); font-weight: 500; font-size: 28px; line-height: 1;
+    color: var(--amber-soft);
+  }
+
+  .monitor { position: absolute; left: 50%; top: 168px; transform: translateX(-50%); }
+  .bezel {
+    position: relative; padding: 11px; border-radius: 20px;
+    background: linear-gradient(180deg, #2a2d3d, #12141d 40%, #0b0c12);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.18),
+      0 40px 70px rgba(4,5,12,.7);
+  }
+  .screen {
+    position: relative; width: var(--screen-w); height: var(--screen-h);
+    border-radius: 10px; overflow: hidden;
+    background:
+      radial-gradient(closest-side, rgba(243,178,62,.28), transparent) 50% 55% / 760px 420px no-repeat,
+      radial-gradient(closest-side, rgba(132,88,240,.80), transparent) -4% 105% / 560px 420px no-repeat,
+      radial-gradient(closest-side, rgba(226,92,160,.62), transparent) 104% -6% / 560px 420px no-repeat,
+      radial-gradient(closest-side, rgba(64,120,230,.45), transparent) 100% 100% / 420px 320px no-repeat,
+      linear-gradient(135deg, #30265a, #1c2350 60%, #161c3e);
+  }
+  /* Glass: a faint sheen across the panel. */
+  .screen::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(115deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,0) 38%);
+  }
+  .win {
+    position: absolute;
+    top: calc(43 / 1418 * 100%); height: calc(1363 / 1418 * 100%);
+    left: calc(640 / 3360 * 100%); width: calc(2080 / 3360 * 100%);
+    border-radius: 7px;
+    box-shadow: 0 0 0 2.5px var(--amber), 0 0 34px rgba(243,178,62,.55), 0 18px 40px rgba(0,0,0,.5);
+  }
+  .win img { display: block; width: 100%; height: 100%; border-radius: 6px; }
+  /* The padding the script sets, shown as two lit bands between the
+     screen edges and the window, each with an arrow and its name. */
+  .pad {
+    position: absolute; top: calc(43 / 1418 * 100%); height: calc(1363 / 1418 * 100%);
+    width: calc(616 / 3360 * 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(255,207,122,.10), rgba(255,207,122,.03));
+    box-shadow: inset 0 0 0 1px rgba(255,207,122,.22);
+    color: var(--amber-soft);
+    font-family: var(--display); font-weight: 600; font-size: var(--pad-font, 22px);
+    opacity: var(--pad-opacity, 1);
+  }
+  .pad.left { left: calc(12 / 3360 * 100%); }
+  .pad.right { right: calc(12 / 3360 * 100%); }
+  .pad svg { width: 70%; height: 18px; overflow: visible; }
+  /* A square preview crops the card to its middle 640 px. Each band's
+     label and arrow keep to the outer side of the band, so the crop edge
+     cuts none of them. */
+  .pad { width: calc(616 / 3360 * 100%); padding: 0 14px; box-sizing: border-box; }
+  .pad.left { align-items: flex-start; }
+  .pad.right { align-items: flex-end; }
+  .pad svg { width: 92px; }
+</style>
+</head>
+<body>
+  <div class="copy">
+    <div class="name">yabai-center-single</div>
+    <div class="slogan">One window, centered.</div>
+  </div>
+  <div class="monitor">
+    <div class="bezel">
+      <div class="screen">
+        <div class="win"><img src="win-centered.png" alt=""></div>
+        <div class="pad left"><span>padding</span><svg viewBox="0 0 100 18" preserveAspectRatio="none"><path d="M3 9H97M3 9l8-7M3 9l8 7M97 9l-8-7M97 9l-8 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg></div>
+        <div class="pad right"><span>padding</span><svg viewBox="0 0 100 18" preserveAspectRatio="none"><path d="M3 9H97M3 9l8-7M3 9l8 7M97 9l-8-7M97 9l-8 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
