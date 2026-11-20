@@ -2,8 +2,14 @@
 # directory per test, and small helpers to read what the script left
 # behind.
 
-load test_helper/bats-support/load
-load test_helper/bats-assert/load
+# bats-support and bats-assert come from Homebrew's bats-core tap, which
+# installs them below $(brew --prefix)/lib. bats searches BATS_LIB_PATH in
+# order and sets it to /usr/lib/bats when the caller sets nothing, so
+# Homebrew's directory goes last: libraries installed some other way and
+# named in BATS_LIB_PATH win.
+BATS_LIB_PATH="$BATS_LIB_PATH:${HOMEBREW_PREFIX:-$(brew --prefix)}/lib"
+bats_load_library bats-support
+bats_load_library bats-assert
 
 # shellcheck disable=SC2034 # read by the .bats files that load this one
 script="$BATS_TEST_DIRNAME/../bin/yabai_center_single"

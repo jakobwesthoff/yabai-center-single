@@ -130,14 +130,18 @@ terminal, the same lines appear there.
 
 ## Tests
 
-The tests use [bats](https://github.com/bats-core/bats-core), which this
-repository includes as git submodules together with bats-support and
-bats-assert. Fetch them once, then run the suite:
+The tests use [bats](https://github.com/bats-core/bats-core) with its
+bats-support and bats-assert libraries. Install them with Homebrew, then
+run the suite:
 
-    git submodule update --init
-    tests/bats/bin/bats tests
+    brew install bats-core
+    brew tap bats-core/bats-core
+    brew install bats-support bats-assert
+    bats tests
 
-The tests run the script against a fake yabai and need
+The tests find the libraries below `$(brew --prefix)/lib`; set
+`BATS_LIB_PATH` to the directory that holds them if you installed them
+some other way. They run the script against a fake yabai and need
 [jq](https://jqlang.org). They take under a minute, most of it spent in a
 test that holds a pass for 11 s and in the one-second waits between
 retries. `--filter <regex>` runs only the tests whose names match.
