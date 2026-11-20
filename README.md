@@ -130,12 +130,17 @@ terminal, the same lines appear there.
 
 ## Tests
 
-    tests/yabai_center_single.sh
+The tests use [bats](https://github.com/bats-core/bats-core), which this
+repository includes as git submodules together with bats-support and
+bats-assert. Fetch them once, then run the suite:
+
+    git submodule update --init
+    tests/bats/bin/bats tests
 
 The tests run the script against a fake yabai and need
-[jq](https://jqlang.org) and [ripgrep](https://github.com/BurntSushi/ripgrep).
-They take under a minute, most of it spent in a test that holds a pass
-for 11 s and in the one-second waits between retries.
+[jq](https://jqlang.org). They take under a minute, most of it spent in a
+test that holds a pass for 11 s and in the one-second waits between
+retries. `--filter <regex>` runs only the tests whose names match.
 
 ## License
 

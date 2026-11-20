@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+#
+# A stand-in for the yabai client that the tests put on PATH as `yabai`.
+# It answers the calls bin/yabai_center_single makes from files in
+# $FAKE_YABAI, records every call in $FAKE_YABAI/calls, and lets a test
+# inject faults by creating files there:
+#
+#   hang                   padding writes block until the file is gone
+#   fail-next-query        the next `query --spaces` fails; content "error"
+#                          (exit 1) or "empty" (exit 0, no output)
+#   fail-queries           every `query --spaces` fails, same modes
+#   slow-next-query        the next `query --spaces` sleeps that many seconds
+#   fail-next-space-read   the next per-space read of the named setting
+#                          answers with nothing
+#   fail-next-write        the next padding write to the named space fails
+#   fail-next-signal-list  the next `signal --list` answers with nothing
+
+set -euo pipefail
+dir=$FAKE_YABAI
+echo "$*" >> "$dir/calls"
+
+# Takes a one-shot fault: the file is removed and its content returned.
+take() {
+    [ -e "$dir/$1" ] || return 1
+    cat "$dir/$1"
+    rm "$dir/$1"
+}
+
+global() {
+    cat "$dir/global" 2>/dev/null || echo 12
+}
+
+case "$*" in
+    "-m config left_padding" | "-m config right_padding" | \
+    "-m config top_padding" | "-m config bottom_padding")
+        global
+        ;;
+    "-m config --space "*)
+        # An empty answer with exit 0 is what the yabai client prints when
+        # the daemon closes the socket without replying.
+        if [ "$(cat "$dir/fail-next-space-read" 2>/dev/null)" = "$5" ]; then
+            rm "$dir/fail-next-space-read"
+            exit 0
+        fi
+        cat "$dir/padding/$4.$5" 2>/dev/null || global
+        ;;
+    "-m query --displays")
+        cat "$dir/displays.json"
+        ;;
+    "-m query --spaces --space "*)
+        jq --argjson index "$5" '.[] | select(.index == $index)' "$dir/spaces.json"
+        ;;
+    "-m query --spaces")
+        if [ -e "$dir/slow-next-query" ]; then
+            sleep "$(take slow-next-query)"
+        fi
+        mode=$(take fail-next-query || cat "$dir/fail-queries" 2>/dev/null || true)
+        case "$mode" in
+            error) echo "fake yabai: query failed" >&2; exit 1 ;;
+            empty) exit 0 ;;
+        esac
+        cat "$dir/spaces.json"
+        ;;
+    "-m signal --list")
+        if take fail-next-signal-list > /dev/null; then
+            exit 0
+        fi
+        cat "$dir/signals.json" 2>/dev/null \
+            || echo '[{"label":"center_single_window_created","action":"yabai_center_single 2080"}]'
+        ;;
+    "-m space "*" --padding "*)
+        if [ -e "$dir/hang" ]; then
+            touch "$dir/hanging"
+            while [ -e "$dir/hang" ]; do sleep 0.1; done
+        fi
+        if [ "$(take fail-next-write || true)" = "$3" ]; then
+            echo "fake yabai: padding write failed" >&2
+            exit 1
+        fi
+        # yabai rejects a padding with an empty or non-numeric side.
+        if ! [[ "$5" =~ ^abs:[0-9]+:[0-9]+:[0-9]+:[0-9]+$ ]]; then
+            echo "fake yabai: invalid padding $5" >&2
+            exit 1
+        fi
+        IFS=: read -r _ top bottom left right <<< "$5"
+        echo "$top" > "$dir/padding/$3.top_padding"
+        echo "$bottom" > "$dir/padding/$3.bottom_padding"
+        echo "$left" > "$dir/padding/$3.left_padding"
+        echo "$right" > "$dir/padding/$3.right_padding"
+        ;;
+    *)
+        echo "fake yabai: unexpected call: $*" >&2
+        exit 1
+        ;;
+esac
