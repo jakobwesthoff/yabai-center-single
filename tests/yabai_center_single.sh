@@ -8,8 +8,8 @@
 # hang the way a busy yabai does, or make single calls fail.
 #
 # Every test runs in its own subshell with errexit, so any failing step fails
-# the test. The whole suite takes about half a minute: the hang test holds a
-# pass for 11 s on purpose, and every retry waits 1 s.
+# the test. The whole suite takes under a minute: the hang test holds a pass
+# for 11 s on purpose, and every retry waits 1 s.
 
 set -euo pipefail
 
